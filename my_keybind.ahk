@@ -36,8 +36,8 @@ SetTitleMatchMode, 2  ; 部分一致でウィンドウを認識
 ^!Down::MoveTopBottom(1)  ; 下半分
 
 MoveWindow(xIndex, yIndex, xDiv, yDiv) {
-    SysGet, screenWidth,  16  ; 画面の幅
-    SysGet, screenHeight, 17  ; 画面の高さ
+    SysGet, screenWidth,  61  ; 画面の幅
+    SysGet, screenHeight, 62  ; 画面の高さ
     
     width := screenWidth // xDiv  ; ウィンドウの幅
     height := screenHeight // yDiv  ; ウィンドウの高さ
@@ -49,16 +49,16 @@ MoveWindow(xIndex, yIndex, xDiv, yDiv) {
 }
 
 MaximizeWindow() {
-    SysGet, screenWidth,  16  ; 画面の幅
-    SysGet, screenHeight, 17  ; 画面の高さ
+    SysGet, screenWidth,  61  ; 画面の幅
+    SysGet, screenHeight, 62  ; 画面の高さ
     
     WinGet, activeWin, ID, A
     WinMove, ahk_id %activeWin%, , 0, 0, screenWidth, screenHeight
 }
 
 MaximizeHeight() {
-    SysGet, screenWidth,  16  ; 画面の幅
-    SysGet, screenHeight, 17  ; 画面の高さ
+    SysGet, screenWidth,  61  ; 画面の幅
+    SysGet, screenHeight, 62  ; 画面の高さ
     
     WinGetPos, x, , width, , A
     WinGet, activeWin, ID, A
@@ -66,8 +66,8 @@ MaximizeHeight() {
 }
 
 MoveSide(isRight) {
-    SysGet, screenWidth,  16
-    SysGet, screenHeight, 17
+    SysGet, screenWidth,  61  ; 画面の幅
+    SysGet, screenHeight, 62  ; 画面の高さ
     
     width := screenWidth // 2
     height := screenHeight
@@ -79,8 +79,8 @@ MoveSide(isRight) {
 }
 
 MoveTopBottom(isBottom) {
-    SysGet, screenWidth,  16
-    SysGet, screenHeight, 17
+    SysGet, screenWidth,  61  ; 画面の幅
+    SysGet, screenHeight, 62  ; 画面の高さ
     
     width := screenWidth
     height := screenHeight // 2
