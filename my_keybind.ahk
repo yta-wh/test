@@ -6,10 +6,41 @@
 ;
 ; Author:     karakaram   http://www.karakaram.com/alt-ime-on-off
 
+
+#Persistent
+#SingleInstance, Force
+#NoEnv
+#UseHook
+#InstallKeybdHook
+#InstallMouseHook
+#HotkeyInterval, 2000
+#MaxHotkeysPerInterval, 200
+Process, Priority,, Realtime
+SendMode, Input
+
 ; Razer Synapseなど、キーカスタマイズ系のツールを併用しているときのエラー対策
 #MaxHotkeysPerInterval 350
 
 #Include IME.ahk
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SetTimer, CheckMouse, 100  ; 100ミリ秒ごとにチェック
+flag := false
+
+CheckMouse:
+    MouseGetPos, xpos, ypos
+    if (xpos <= 0 and ypos <= 0)
+    {
+        if (!flag){
+            Send #{Tab}
+            flag := true
+        }
+	
+    } else {
+        flag := flase
+    }
+
+return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
