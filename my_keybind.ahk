@@ -22,25 +22,6 @@ SendMode, Input
 #MaxHotkeysPerInterval 350
 
 #Include IME.ahk
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-SetTimer, CheckMouse, 100  ; 100ミリ秒ごとにチェック
-flag := false
-
-CheckMouse:
-    MouseGetPos, xpos, ypos
-    if (xpos <= 0 and ypos <= 0)
-    {
-        if (!flag){
-            Send #{Tab}
-            flag := true
-        }
-	
-    } else {
-        flag := flase
-    }
-
-return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -66,96 +47,159 @@ SetTitleMatchMode, 2  ; 部分一致でウィンドウを認識
 ^!Up::MoveTopBottom(0)  ; 上半分
 ^!Down::MoveTopBottom(1)  ; 下半分
 
-^!=::ScaleWindow(1.1)  ; Ctrl + Alt + "="（Shift付きの"+"キーで拡大）
-^!-::ScaleWindow(0.9)   ; Ctrl + Alt + "-"で縮小
+^!=::ScaleWindow(1.1)  ; 拡大
+^!-::ScaleWindow(0.9)   ; 縮小
 
+
+;-------------------------------------------------
+; 指定分割位置にウィンドウを移動・リサイズ
+;-------------------------------------------------
 MoveWindow(xIndex, yIndex, xDiv, yDiv) {
-    SysGet, screenWidth,  61  ; 画面の幅
-    SysGet, screenHeight, 62  ; 画面の高さ
-    
-    width := screenWidth // xDiv  ; ウィンドウの幅
-    height := screenHeight // yDiv  ; ウィンドウの高さ
-    x := xIndex * width  ; X座標
-    y := yIndex * height  ; Y座標
-    
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , x, y, width, height
-}
-
-MaximizeWindow() {
-    SysGet, screenWidth,  61  ; 画面の幅
-    SysGet, screenHeight, 62  ; 画面の高さ
-    
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , 0, 0, screenWidth, screenHeight
-}
-
-MaximizeHeight() {
-    SysGet, screenWidth,  61  ; 画面の幅
-    SysGet, screenHeight, 62  ; 画面の高さ
-    
-    WinGetPos, x, , width, , A
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , x, 0, width, screenHeight
-}
-
-MoveSide(isRight) {
-    SysGet, screenWidth,  61  ; 画面の幅
-    SysGet, screenHeight, 62  ; 画面の高さ
-    
-    width := screenWidth // 2
-    height := screenHeight
-    x := isRight * width
-    y := 0
-    
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , x, y, width, height
-}
-
-MoveTopBottom(isBottom) {
-    SysGet, screenWidth,  61  ; 画面の幅
-    SysGet, screenHeight, 62  ; 画面の高さ
-    
-    width := screenWidth
-    height := screenHeight // 2
-    x := 0
-    y := isBottom * height
-    
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , x, y, width, height
-}
-
-CenterWindow() {
-    SysGet, screenWidth, 61  ; 画面の幅
-    SysGet, screenHeight, 62  ; 画面の高さ
-    
-    WinGetPos, x, y, width, height, A  ; アクティブウィンドウの位置とサイズを取得
-    newX := (screenWidth - width) // 2  ; 画面中央のX座標
-    newY := (screenHeight - height) // 2  ; 画面中央のY座標
-
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , newX, newY  ; ウィンドウを中央へ移動
-}
-
-ScaleWindow(factor) {
-    ; アクティブウィンドウの情報取得
+    ; アクティブウィンドウの位置取得
     WinGetPos, winX, winY, winW, winH, A
-    ; ウィンドウ中心座標を算出
+
+    SysGet, monitorCount, MonitorCount
+    Loop, %monitorCount% {
+        ; モニターの作業領域情報を一度に取得
+        SysGet, mon, MonitorWorkArea, %A_Index%
+        ; monLeft, monTop, monRight, monBottom が利用可能になる
+
+        if (winX >= monLeft && winX < monRight && winY >= monTop && winY < monBottom) {
+            screenWidth := monRight - monLeft
+            screenHeight := monBottom - monTop
+
+            width := screenWidth // xDiv
+            height := screenHeight // yDiv
+            x := monLeft + (xIndex * width)
+            y := monTop + (yIndex * height)
+
+            WinGet, activeWin, ID, A
+            WinMove, ahk_id %activeWin%, , x, y, width, height
+            return
+        }
+    }
+}
+
+
+;-------------------------------------------------
+; アクティブウィンドウをモニターの全体に拡大
+;-------------------------------------------------
+MaximizeWindow() {
+    WinGetPos, winX, winY, winW, winH, A
+
+    SysGet, monitorCount, MonitorCount
+    Loop, %monitorCount% {
+        SysGet, mon, MonitorWorkArea, %A_Index%
+        if (winX >= monLeft && winX < monRight && winY >= monTop && winY < monBottom) {
+            screenWidth := monRight - monLeft
+            screenHeight := monBottom - monTop
+
+            WinGet, activeWin, ID, A
+            WinMove, ahk_id %activeWin%, , monLeft, monTop, screenWidth, screenHeight
+            return
+        }
+    }
+}
+
+
+;-------------------------------------------------
+; アクティブウィンドウの横位置はそのままで、縦をモニター全体に拡大
+;-------------------------------------------------
+MaximizeHeight() {
+    WinGetPos, winX, winY, winW, winH, A
+
+    SysGet, monitorCount, MonitorCount
+    Loop, %monitorCount% {
+        SysGet, mon, MonitorWorkArea, %A_Index%
+        if (winX >= monLeft && winX < monRight && winY >= monTop && winY < monBottom) {
+            screenHeight := monBottom - monTop
+
+            WinGet, activeWin, ID, A
+            WinMove, ahk_id %activeWin%, , winX, monTop, winW, screenHeight
+            return
+        }
+    }
+}
+
+
+;-------------------------------------------------
+; アクティブウィンドウを左右に配置（半分ずつ）
+;-------------------------------------------------
+MoveSide(isRight) {
+    WinGetPos, winX, winY, winW, winH, A
+
+    SysGet, monitorCount, MonitorCount
+    Loop, %monitorCount% {
+        SysGet, mon, MonitorWorkArea, %A_Index%
+        if (winX >= monLeft && winX < monRight && winY >= monTop && winY < monBottom) {
+            screenWidth := monRight - monLeft
+            screenHeight := monBottom - monTop
+
+            width := screenWidth // 2
+            height := screenHeight
+            x := monLeft + (isRight * width)
+            y := monTop
+
+            WinGet, activeWin, ID, A
+            WinMove, ahk_id %activeWin%, , x, y, width, height
+            return
+        }
+    }
+}
+
+
+;-------------------------------------------------
+; アクティブウィンドウを上下に配置（上下半分）
+;-------------------------------------------------
+MoveTopBottom(isBottom) {
+    WinGetPos, winX, winY, winW, winH, A
+
+    SysGet, monitorCount, MonitorCount
+    Loop, %monitorCount% {
+        SysGet, mon, MonitorWorkArea, %A_Index%
+        if (winX >= monLeft && winX < monRight && winY >= monTop && winY < monBottom) {
+            screenWidth := monRight - monLeft
+            screenHeight := monBottom - monTop
+
+            width := screenWidth
+            height := screenHeight // 2
+            x := monLeft
+            y := monTop + (isBottom * height)
+
+            WinGet, activeWin, ID, A
+            WinMove, ahk_id %activeWin%, , x, y, width, height
+            return
+        }
+    }
+}
+
+
+;-------------------------------------------------
+; アクティブウィンドウのサイズを拡大・縮小
+;-------------------------------------------------
+ScaleWindow(factor) {
+    WinGetPos, winX, winY, winW, winH, A
     centerX := winX + winW // 2
     centerY := winY + winH // 2
-    
-    ; 新しいサイズを算出（四捨五入して整数化）
+
     newW := Round(winW * factor)
     newH := Round(winH * factor)
-    
-    ; 新しい位置を、ウィンドウ中心が同じになるように計算
-    newX := centerX - newW // 2
-    newY := centerY - newH // 2
-    
-    ; ウィンドウ移動・リサイズ
-    WinGet, activeWin, ID, A
-    WinMove, ahk_id %activeWin%, , newX, newY, newW, newH
+
+    SysGet, monitorCount, MonitorCount
+    Loop, %monitorCount% {
+        SysGet, mon, MonitorWorkArea, %A_Index%
+        if (winX >= monLeft && winX < monRight && winY >= monTop && winY < monBottom) {
+            newX := centerX - newW // 2
+            newY := centerY - newH // 2
+            ; ※必要に応じ、ウィンドウが作業領域外に出ないよう制限を加えることも可能
+
+            WinGet, activeWin, ID, A
+            WinMove, ahk_id %activeWin%, , newX, newY, newW, newH
+            return
+        }
+    }
 }
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
