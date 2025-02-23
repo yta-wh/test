@@ -411,6 +411,30 @@ LAlt & z::
   Send, ^z
   Return
 
++^j::
+  Send, {F6}
+  Return
+
++^k::
+  Send, {F7}
+  Return
+
++^l::
+  Send, {F9}
+  Return
+
++^vkBB::
+  Send, {F8}
+  Return
+
++^vkBA::
+  Send, {F10}
+  Return
+
+LAlt & Space::
+  Send ^{ESC} 
+  Return
+
 :*:zh::←
 :*:zj::↓
 :*:zk::↑
