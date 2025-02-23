@@ -35,6 +35,9 @@ SetTitleMatchMode, 2  ; 部分一致でウィンドウを認識
 ^!Up::MoveTopBottom(0)  ; 上半分
 ^!Down::MoveTopBottom(1)  ; 下半分
 
+^!=::ScaleWindow(1.1)  ; Ctrl + Alt + "="（Shift付きの"+"キーで拡大）
+^!-::ScaleWindow(0.9)   ; Ctrl + Alt + "-"で縮小
+
 MoveWindow(xIndex, yIndex, xDiv, yDiv) {
     SysGet, screenWidth,  61  ; 画面の幅
     SysGet, screenHeight, 62  ; 画面の高さ
@@ -91,6 +94,37 @@ MoveTopBottom(isBottom) {
     WinMove, ahk_id %activeWin%, , x, y, width, height
 }
 
+CenterWindow() {
+    SysGet, screenWidth, 61  ; 画面の幅
+    SysGet, screenHeight, 62  ; 画面の高さ
+    
+    WinGetPos, x, y, width, height, A  ; アクティブウィンドウの位置とサイズを取得
+    newX := (screenWidth - width) // 2  ; 画面中央のX座標
+    newY := (screenHeight - height) // 2  ; 画面中央のY座標
+
+    WinGet, activeWin, ID, A
+    WinMove, ahk_id %activeWin%, , newX, newY  ; ウィンドウを中央へ移動
+}
+
+ScaleWindow(factor) {
+    ; アクティブウィンドウの情報取得
+    WinGetPos, winX, winY, winW, winH, A
+    ; ウィンドウ中心座標を算出
+    centerX := winX + winW // 2
+    centerY := winY + winH // 2
+    
+    ; 新しいサイズを算出（四捨五入して整数化）
+    newW := Round(winW * factor)
+    newH := Round(winH * factor)
+    
+    ; 新しい位置を、ウィンドウ中心が同じになるように計算
+    newX := centerX - newW // 2
+    newY := centerY - newH // 2
+    
+    ; ウィンドウ移動・リサイズ
+    WinGet, activeWin, ID, A
+    WinMove, ahk_id %activeWin%, , newX, newY, newW, newH
+}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
