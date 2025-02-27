@@ -64,7 +64,7 @@ MoveWindow(xIndex, yIndex, xDiv, yDiv) {
         SysGet, mon, MonitorWorkArea, %A_Index%
         ; monLeft, monTop, monRight, monBottom が利用可能になる
 
-        if ((winX + winW) // 2 >= monLeft && (winX + winW) // 2 <= monRight && (winY + winH) // 2 >= monTop && (winY + winH) // 2 <= monBottom) {
+        if ((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) {
             screenWidth := monRight - monLeft
             screenHeight := monBottom - monTop
 
@@ -90,7 +90,7 @@ MaximizeWindow() {
     SysGet, monitorCount, MonitorCount
     Loop, %monitorCount% {
         SysGet, mon, MonitorWorkArea, %A_Index%
-        if ((winX + winW) // 2 >= monLeft && (winX + winW) // 2 <= monRight && (winY + winH) // 2 >= monTop && (winY + winH) // 2 <= monBottom) {
+        if ((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) {
             screenWidth := monRight - monLeft
             screenHeight := monBottom - monTop
 
@@ -111,7 +111,7 @@ MaximizeHeight() {
     SysGet, monitorCount, MonitorCount
     Loop, %monitorCount% {
         SysGet, mon, MonitorWorkArea, %A_Index%
-        if ((winX + winW) // 2 >= monLeft && (winX + winW) // 2 <= monRight && (winY + winH) // 2 >= monTop && (winY + winH) // 2 <= monBottom) {
+        if ((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) {
             screenHeight := monBottom - monTop
 
             WinGet, activeWin, ID, A
@@ -131,7 +131,7 @@ MoveSide(isRight) {
     SysGet, monitorCount, MonitorCount
     Loop, %monitorCount% {
         SysGet, mon, MonitorWorkArea, %A_Index%
-        if ((winX + winW) // 2 >= monLeft && (winX + winW) // 2 <= monRight && (winY + winH) // 2 >= monTop && (winY + winH) // 2 <= monBottom) {
+        if (((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) && false) {
             screenWidth := monRight - monLeft
             screenHeight := monBottom - monTop
 
@@ -142,13 +142,12 @@ MoveSide(isRight) {
 
             WinGet, activeWin, ID, A
             WinMove, ahk_id %activeWin%, , x, y, width, height
-
-            tmp1 := (winX + winW) // 2 
-            tmp2 := (winY + winH) // 2 
-
-            MsgBox (%winX%, %winY%, %winW%, %winH%) → (%tmp1%, %tmp2%) / %monLeft%, %monRight%, %monTop%, %monBottom%
             return
         }
+
+        tmp1 := (winX + winW // 2)
+        tmp2 := (winY + winH // 2) 
+	MsgBox (%winX%, %winY%, %winW%, %winH%) → (%tmp1%, %tmp2%) / %monLeft%, %monRight%, %monTop%, %monBottom%
     }
 }
 
@@ -162,7 +161,7 @@ MoveTopBottom(isBottom) {
     SysGet, monitorCount, MonitorCount
     Loop, %monitorCount% {
         SysGet, mon, MonitorWorkArea, %A_Index%
-        if ((winX + winW) // 2 >= monLeft && (winX + winW) // 2 <= monRight && (winY + winH) // 2 >= monTop && (winY + winH) // 2 <= monBottom) {
+        if ((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) {
             screenWidth := monRight - monLeft
             screenHeight := monBottom - monTop
 
@@ -193,7 +192,7 @@ ScaleWindow(factor) {
     SysGet, monitorCount, MonitorCount
     Loop, %monitorCount% {
         SysGet, mon, MonitorWorkArea, %A_Index%
-        if ((winX + winW) // 2 >= monLeft && (winX + winW) // 2 <= monRight && (winY + winH) // 2 >= monTop && (winY + winH) // 2 <= monBottom) {
+        if ((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) {
             newX := centerX - newW // 2
             newY := centerY - newH // 2
             ; ※必要に応じ、ウィンドウが作業領域外に出ないよう制限を加えることも可能
