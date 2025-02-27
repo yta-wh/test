@@ -131,7 +131,7 @@ MoveSide(isRight) {
     SysGet, monitorCount, MonitorCount
     Loop, %monitorCount% {
         SysGet, mon, MonitorWorkArea, %A_Index%
-        if (((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) && false) {
+        if ((winX + winW // 2) >= monLeft && (winX + winW // 2) <= monRight && (winY + winH // 2) >= monTop && (winY + winH // 2) <= monBottom) {
             screenWidth := monRight - monLeft
             screenHeight := monBottom - monTop
 
@@ -144,10 +144,6 @@ MoveSide(isRight) {
             WinMove, ahk_id %activeWin%, , x, y, width, height
             return
         }
-
-        tmp1 := (winX + winW // 2)
-        tmp2 := (winY + winH // 2) 
-	MsgBox (%winX%, %winY%, %winW%, %winH%) → (%tmp1%, %tmp2%) / %monLeft%, %monRight%, %monTop%, %monBottom%
     }
 }
 
